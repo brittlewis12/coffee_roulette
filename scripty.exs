@@ -1,9 +1,9 @@
-alias CoffeeRoulette.SortingHat
+alias CoffeeRoulette.{SortingHat, DataLoader}
 {:ok, pid} = SortingHat.start_link("May")
-# hat1 = :sys.get_state pid
+hat1 = :sys.get_state pid
 SortingHat.set_participants(
   pid,
-  hat.history |> Enum.at(-1) |> Map.fetch!(:participants)
+  hat1.active_participants
 )
 # hat2 = :sys.get_state pid
 {:ok, round} = SortingHat.sort(pid)

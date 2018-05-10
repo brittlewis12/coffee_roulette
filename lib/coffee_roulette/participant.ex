@@ -12,7 +12,7 @@ defmodule CoffeeRoulette.Participant do
     marketing
     legal
     engineering
-    production
+    studio
     data_science
     creative
     people

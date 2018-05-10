@@ -1,6 +1,5 @@
 alias CoffeeRoulette.{DataLoader, Round, Group, Participant}
 
-
 # returns a map with native data structures representing the parsed and
 # lightly transformed sheets data as well as app data structures representing
 # more useful representations of past coffee roulette rounds: participants and

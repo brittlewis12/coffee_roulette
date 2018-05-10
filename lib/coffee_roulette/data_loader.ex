@@ -10,14 +10,20 @@ defmodule CoffeeRoulette.DataLoader do
       morning_and_afternoon_rounds_values
       |> Enum.map(&raw_rounds_data/1)
 
-    participants =
+    active_participant_emails =
+      form_responses_values
+      |> Enum.map(&Enum.at(&1, 1)) # extract second column values (email addresses)
+
+    active_participants =
       morning_rounds_data
       |> Enum.concat(afternoon_rounds_data)
       |> Enum.map(&participant_from_rounds_row/1)
+      |> Enum.filter(&Enum.member?(active_participant_emails, &1.email))
+      |> Enum.uniq
 
     historical_rounds =
       [morning_rounds_data, afternoon_rounds_data]
-      |> Enum.map(&rounds_groups_from_rounds_data(&1, participants))
+      |> Enum.map(&rounds_groups_from_rounds_data(&1, active_participants))
       |> merge_rounds_groups
       |> Enum.with_index
       |> Enum.map(&Round.load/1)
@@ -25,7 +31,7 @@ defmodule CoffeeRoulette.DataLoader do
     %{
       raw_form_values: form_responses_values,
       raw_morning_afternoon_values: morning_and_afternoon_rounds_values,
-      participants: participants,
+      active_participants: active_participants,
       historical_rounds: historical_rounds
     }
   end
@@ -127,8 +133,7 @@ defmodule CoffeeRoulette.DataLoader do
     MapSet.difference(all_emails, existing_emails)
   end
 
-  @did_not_participate ["", "?", "n/a"]
-  defp group_id_from_str(str, _) when str in @did_not_participate, do: :none
+  defp group_id_from_str("", _), do: :none
   defp group_id_from_str("done", _), do: :done
   defp group_id_from_str(group_number_str, time_of_day) do
     case group_id_number(group_number_str) do

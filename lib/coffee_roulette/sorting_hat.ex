@@ -17,9 +17,9 @@ defmodule CoffeeRoulette.SortingHat do
 
   def init(name) do
     with round <- Round.new(name),
-         {:ok, history} <- fetch_history()
+         history_and_participants <- fetch_history_and_participants()
     do
-      {:ok, %{round: round, history: history}}
+      {:ok, Map.put(history_and_participants, :round, round)}
     else
       {:error, _reason} = e -> e
       :error -> :error
@@ -36,7 +36,7 @@ defmodule CoffeeRoulette.SortingHat do
   end
 
   def handle_call(:sort, _from, state) do
-    case Round.sort(state.round, state.history) do
+    case Round.sort(state.round, state.historical_rounds) do
       {:ok, round} = reply -> {:reply, reply, %{state|round: round}}
       _ -> {:reply, :error, state}
     end
@@ -45,11 +45,11 @@ defmodule CoffeeRoulette.SortingHat do
   @json_response_file "/Users/britt/Downloads/gsheets-values-coffee-roulette-response.json"
 
   # TODO: convert to live request
-  defp fetch_history do
+  defp fetch_history_and_participants do
     with {:ok, raw_response_body} <- File.read @json_response_file do
       raw_response_body
       |> DataLoader.extract_overkill
-      |> Map.fetch(:historical_rounds)
+      |> Map.take([:historical_rounds, :active_participants])
     else
       {:error, _reason} = e -> e
       :error -> :error
