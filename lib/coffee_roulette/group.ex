@@ -1,11 +1,11 @@
 defmodule CoffeeRoulette.Group do
   alias CoffeeRoulette.{Participant, Group}
 
-  @enforce_keys [:participants]
-  defstruct [:participants]
+  @enforce_keys [:participants, :id]
+  defstruct [:participants, :id]
 
-  def new(participants \\ []) when is_list(participants) do
-    %Group{participants: MapSet.new(participants)}
+  def new(id, participants \\ []) when is_list(participants) do
+    %Group{id: id, participants: MapSet.new(participants)}
   end
 
   def add(%Group{} = group, %Participant{} = participant), do:
