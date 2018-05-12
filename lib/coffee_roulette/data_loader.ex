@@ -116,8 +116,6 @@ defmodule CoffeeRoulette.DataLoader do
     |> Enum.count
   end
 
-  # NOTE: matthew.spaulding@plated.com, ryan.treacy@plated.com responded twice:
-  # doesn't matter for getting emails tho! — if this data is needed, only take latest?
   def all_emails(form_responses_values) do
     form_responses_values
     |> Enum.drop(1) # drop header row

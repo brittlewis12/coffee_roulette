@@ -1,6 +1,7 @@
 # CoffeeRoulette
 
-**TODO: Add description**
+## versions
+* v0.1 -- 5/10/2018 -- initial sorting impl, parsing sheet data offline & generating list
 
 ## Features
 * Load participants from spreadsheet data

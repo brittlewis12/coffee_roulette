@@ -1,4 +1,4 @@
-alias CoffeeRoulette.{SortingHat, DataLoader}
+alias CoffeeRoulette.SortingHat
 {:ok, pid} = SortingHat.start_link("May")
 hat1 = :sys.get_state pid
 SortingHat.set_participants(
