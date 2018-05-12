@@ -56,8 +56,19 @@ defmodule CoffeeRoulette.Round do
     if (Enum.member?(already_placed, participant)) do
       groups
     else
-      available = (compatible -- already_placed)
-      partners = available |> Enum.take(@minimum_group_size - 1)
+      available = MapSet.difference(MapSet.new(compatible), MapSet.new(already_placed))
+      partners =
+        Enum.reduce_while(available, [], fn
+          potential_partner, partners when length(partners) == 2 ->
+            {:halt, partners}
+          potential_partner, [] ->
+            {:cont, [potential_partner]}
+          potential_partner, partners ->
+            case Enum.all?(partners, (& &1.guild != potential_partner.guild)) do
+              true -> {:cont, [potential_partner|partners]}
+              false -> {:cont, partners}
+            end
+        end)
       group = Group.new(:stuff, [participant|partners])
       [group|groups]
     end
@@ -74,6 +85,7 @@ defmodule CoffeeRoulette.Round do
     |> Enum.reject(fn potential_group_member ->
       potential_group_member.guild == participant.guild
     end)
+    |> Enum.shuffle
     |> Enum.sort_by(fn potential_group_member ->
       potential_group_member.preferred_time_of_day == participant.preferred_time_of_day
     end, &>=/2)
